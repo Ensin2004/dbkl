@@ -1,0 +1,12 @@
+{
+  "name": "dbkl",
+  "version": "1.0.0",
+  "scripts": {
+    "frontend": "npm start --prefix auditor-frontend",
+    "backend": "npm start --prefix auditor-backend",
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
