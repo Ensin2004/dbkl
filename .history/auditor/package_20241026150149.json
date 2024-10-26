@@ -1,0 +1,12 @@
+{
+  "name": "dbkl-project",
+  "version": "1.0.0",
+  "scripts": {
+    "frontend": "npm start --prefix dbkl-frontend",
+    "backend": "npm start --prefix dbkl-backend",
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
