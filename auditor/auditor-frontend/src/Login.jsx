@@ -18,8 +18,8 @@ const Login = () => {
         password,
       });
       if (response.status === 200) {
-        alert("Login successful");
-        // navigate("/map"); // Redirect to the map page (implemented next by other person)
+        //alert("Login successful");
+        navigate("/map"); 
       }
     } catch (error) {
       alert("Invalid credentials");
