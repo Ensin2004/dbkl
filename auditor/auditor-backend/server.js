@@ -48,6 +48,20 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+// get tenants' data route
+app.get('/api/tenants', (req, res) => {
+  const query = 'SELECT IC, latitude, longitude, status FROM tenant';
+
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error fetching tenants:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    res.status(200).json(results);
+  });
+});
+
 app.get('/', (req, res) => {
     res.send('Backend is running...');
 });

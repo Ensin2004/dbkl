@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+/* Map Section */
+.map-section {
+  /* flex: 3; */
+  position: relative;
+  flex-basis: 100%;
+}
+
+.marker-green {
+  filter: hue-rotate(-90deg) brightness(1.2); /* Adjust this value to get green */
+}
+
+.marker-orange {
+  filter: hue-rotate(-190deg) brightness(1.2); /* Adjust this value to get orange */
+}
+
+.marker-red {
+  filter: hue-rotate(-230deg) brightness(1); /* Adjust this value to get red */
+}
