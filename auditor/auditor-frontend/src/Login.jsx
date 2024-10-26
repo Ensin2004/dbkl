@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock } from "react-icons/fa"; // Import icons
 import "./Login.css";
 
+// TODO: if email correct and password wrong, then show incorrect password for this user. if email wrong, show no user exist with this email
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
