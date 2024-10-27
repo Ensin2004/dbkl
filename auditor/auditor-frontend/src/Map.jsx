@@ -1,4 +1,3 @@
-// WORKING [ICON CHANGED, POPUP DONE, CHART DONE, DESIGN DONE]
 import React, { useEffect, useState } from "react";
 import {
   MapContainer,
@@ -13,7 +12,29 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "leaflet-control-geocoder";
 import "leaflet-control-geocoder/dist/Control.Geocoder.css";
+import { Bar } from "react-chartjs-2";
+import "chart.js/auto";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { FaInfoCircle } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import "./Map.css";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -91,6 +112,32 @@ const getPlaceName = async (latitude, longitude) => {
 const Map = () => {
   const [tenants, setTenants] = useState([]);
   const [placeNames, setPlaceNames] = useState({});
+  const [stats, setStats] = useState({
+    success: 0,
+    incomplete: 0,
+    failed: 0,
+    unregistered: 0,
+  });
+
+  const totalRequests =
+    stats.success + stats.incomplete + stats.failed + stats.unregistered;
+
+  // New state for popup
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupData, setPopupData] = useState(null);
+
+  // Function to handle info icon click
+  const handleInfoClick = (status) => {
+    const filteredTenants = tenants.filter((tenant) => {
+      // Include tenants that match the status or are unregistered (null/empty status)
+      return (
+        tenant.status === status ||
+        (status === "unregistered" && !tenant.status)
+      );
+    });
+    setPopupData(filteredTenants);
+    setPopupVisible(true);
+  };
 
   useEffect(() => {
     document.body.style.background = "none";
@@ -107,6 +154,27 @@ const Map = () => {
           return;
         }
 
+        // Count the number of requests by status
+        const successCount = data.filter(
+          (tenant) => tenant.status === "success"
+        ).length;
+        const incompleteCount = data.filter(
+          (tenant) => tenant.status === "incomplete"
+        ).length;
+        const failedCount = data.filter(
+          (tenant) => tenant.status === "failed"
+        ).length;
+        const unregisteredCount = data.filter(
+          (tenant) => !tenant.status
+        ).length;
+
+        setStats({
+          success: successCount,
+          incomplete: incompleteCount,
+          failed: failedCount,
+          unregistered: unregisteredCount,
+        });
+
         setTenants(data);
 
         // Fetch place names after tenants are set
@@ -114,7 +182,7 @@ const Map = () => {
         await Promise.all(
           data.map(async (tenant) => {
             const name = await getPlaceName(tenant.latitude, tenant.longitude);
-            names[tenant.IC] = name; 
+            names[tenant.IC] = name;
             console.log(`Fetched place name for tenant ${tenant.IC}:`, name); // Log each fetched name
           })
         );
@@ -131,9 +199,98 @@ const Map = () => {
     };
   }, []);
 
+  const barChartData = {
+    labels: ["Success", "Incomplete", "Failed", "Unregistered"],
+    datasets: [
+      {
+        label: "Request Status",
+        data: [
+          stats.success,
+          stats.incomplete,
+          stats.failed,
+          stats.unregistered,
+        ],
+        backgroundColor: ["green", "orange", "red", "#1E90FF"],
+      },
+    ],
+  };
+
+  const barChartOptions = {
+    responsive: true,
+    animation: {
+      duration: 1500,
+      easing: "easeInOutBounce", // Easing function (e.g., 'linear', 'easeIn', 'easeOut', 'easeInOutBounce')
+      loop: false,
+    },
+    indexAxis: "y",
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: {
+          precision: 0, // Ensure whole numbers are shown
+        },
+        grid: {
+          display: false, // Hide grid lines on the x-axis
+        },
+      },
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true },
+    },
+  };
+
   return (
     <ErrorBoundary>
       <div className="container">
+        <div className="left-container">
+          <h2>
+            <center>Requests Overview ({totalRequests})</center>
+          </h2>
+          {/* Statistics Section */}
+          <div className="stats-container">
+            <div className="stats">
+              <p className="stat-item success">
+                <span className="label">Success: </span>
+                <span className="count">{stats.success}</span>
+                <FaInfoCircle
+                  className="info-icon"
+                  onClick={() => handleInfoClick("success")}
+                />
+              </p>
+              <p className="stat-item incomplete">
+                <span className="label">Incomplete: </span>
+                <span className="count">{stats.incomplete}</span>
+                <FaInfoCircle
+                  className="info-icon"
+                  onClick={() => handleInfoClick("incomplete")}
+                />
+              </p>
+              <p className="stat-item failed">
+                <span className="label">Failed: </span>
+                <span className="count">{stats.failed}</span>
+                <FaInfoCircle
+                  className="info-icon"
+                  onClick={() => handleInfoClick("failed")}
+                />
+              </p>
+              <p className="stat-item unregistered">
+                <span className="label">Unregistered: </span>
+                <span className="count">{stats.unregistered}</span>
+                <FaInfoCircle
+                  className="info-icon"
+                  onClick={() => handleInfoClick("unregistered")}
+                />
+              </p>
+            </div>
+          </div>
+
+          {/* Bar Chart Section */}
+          <div className="bar-chart-container">
+            <Bar data={barChartData} options={barChartOptions} height={250} />
+          </div>
+        </div>
+
         {/* Map Section */}
         <div className="map-section">
           <MapContainer
@@ -190,7 +347,7 @@ const Map = () => {
                       }
                     >
                       <Popup>
-                        {/* Use Popup from react-leaflet here */}
+                        {/* Use Popup from react-leaflet */}
                         <div>
                           <h4>{placeNames[tenant.IC] || "Loading..."}</h4>
                         </div>
@@ -203,6 +360,46 @@ const Map = () => {
             })}
           </MapContainer>
         </div>
+
+        {/* Popup for tenant info */}
+        {popupVisible && (
+          <div className="popup-overlay">
+            <div className="popup-content">
+              <h2>
+                <center>Tenant Details</center>
+              </h2>
+              <FaTimes
+                className="close-popup"
+                onClick={() => setPopupVisible(false)}
+              />
+              {popupData && popupData.length > 0 ? (
+                <ul>
+                  {popupData.map((tenant, index) => (
+                    <li key={index} style={{ marginBottom: "20px" }}>
+                      <div>
+                        <strong>IC:</strong> <strong>{tenant.IC}</strong>
+                      </div>
+                      <div>
+                        <strong>Latitude:</strong>{" "}
+                        {parseFloat(tenant.latitude).toFixed(4)}
+                      </div>
+                      <div>
+                        <strong>Longitude:</strong>{" "}
+                        {parseFloat(tenant.longitude).toFixed(4)}
+                      </div>
+                      <div>
+                        <strong>Location:</strong>{" "}
+                        {placeNames[tenant.IC] || "Unknown"}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No tenants found for this status.</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </ErrorBoundary>
   );
