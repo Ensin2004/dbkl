@@ -1,23 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Header from './Header';
+import DescriptionPage from './DescriptionPage';
 
 function App() {
+  const [step, setStep] = useState(1);
+
+  // Start the process by going to IC Entry Page (implement next in different branch)
+  const handleGetStarted = () => setStep(2);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+      <Header />
+
+      {/* Step 1: Show Description Page */}
+      {step === 1 && <DescriptionPage onGetStarted={handleGetStarted} />}
     </div>
   );
 }
