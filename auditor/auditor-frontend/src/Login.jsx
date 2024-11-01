@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock } from "react-icons/fa"; // Import icons
 import "./Login.css";
 
-// TODO: if email correct and password wrong, then show incorrect password for this user. if email wrong, show no user exist with this email
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,10 +18,16 @@ const Login = () => {
       });
       if (response.status === 200) {
         //alert("Login successful");
-        navigate("/map"); 
+        navigate("/map");
       }
     } catch (error) {
-      alert("Invalid credentials");
+      // Check if there's a response from the server
+      if (error.response) {
+        // Display the specific error message from the server
+        alert(error.response.data.message);
+      } else {
+        alert("An error occurred during login");
+      }
     }
   };
 
