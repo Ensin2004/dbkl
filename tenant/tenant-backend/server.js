@@ -29,6 +29,19 @@ app.use((req, res, next) => {
 app.use(express.json()); // For parsing application/json
 // app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
 
+// Route to check if an IC number exists in the tenant table
+app.get('/tenant/IC/:IC', (req, res) => {
+  const { IC } = req.params; // Get the IC number from the URL
+
+  const sql = 'SELECT * FROM tenant WHERE IC = ?';
+  connection.query(sql, [IC], (err, results) => {
+      if (err) {
+          return res.status(500).json({ error: 'Failed to fetch data' });
+      }
+      res.status(results.length > 0 ? 200 : 404).json({ exists: results.length > 0 });
+  });
+});
+
 // Start server
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
