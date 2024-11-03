@@ -114,6 +114,35 @@ app.get('/tenant/fetch-image/:ic', (req, res) => {
   });
 });
 
+// Route to update the tenant status in the database
+app.put('/tenant/update-status/:ic', (req, res) => {
+  console.log(`Received request to update status for IC: ${req.params.ic}`); // Log the IC received
+
+  console.log(`Request body:`, req.body); // Log the request body
+
+  const { ic } = req.params; // Get the IC number from the URL
+  const { status } = req.body; // Get the status from the request body
+
+  // Validate the status
+  if (!['success', 'failed', 'incomplete'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status value' });
+  }
+
+  const sql = 'UPDATE tenant SET status = ? WHERE IC = ?';
+  connection.query(sql, [status, ic], (err, results) => {
+      if (err) {
+          console.error('Error updating status:', err); // Log database error
+          return res.status(500).json({ error: 'Failed to update status', details: err.message });
+      }
+      if (results.affectedRows > 0) {
+          res.status(200).json({ message: 'Status updated successfully' });
+      } else {
+          console.warn('IC not found:', ic); // Log if IC not found
+          res.status(404).json({ message: 'IC not found' });
+      }
+  });
+});
+
 // Start server
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

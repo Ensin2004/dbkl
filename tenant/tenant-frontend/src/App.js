@@ -3,6 +3,7 @@ import Header from "./Header";
 import DescriptionPage from "./DescriptionPage";
 import ICEntryPage from "./ICEntryPage";
 import CameraPage from './CameraPage';
+import ResultsPage from './ResultsPage';
 
 function App() {
   const [step, setStep] = useState(1);
@@ -42,7 +43,18 @@ function App() {
 
       {/* Step 3: Camera Page, pass IC Number and handleConfirm function */}
       {step === 3 && <CameraPage icNumber={icNumber} onConfirm={handleConfirm} />} 
-      
+
+      {/* Step 4: Results Page, pass IC Number, Latitude, and Longitude */}
+      {step === 4 && (
+        <ResultsPage 
+          icNumber={icNumber}
+          isLocationMatch={isLocationMatch} // Pass location match result
+          isFaceMatch={isFaceMatch}         // Pass face match result 
+          latitude={latitude} 
+          longitude={longitude} 
+        />
+      )}
+
     </div>
   );
 }
