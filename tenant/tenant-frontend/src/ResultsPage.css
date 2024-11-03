@@ -1,0 +1,57 @@
+.full-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; 
+  margin: 0;
+}
+
+.results-container {
+  display: flex;
+  flex-direction: column;
+  width: 800px;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 20px;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #b4b4b4; 
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(138, 138, 138, 0.2);
+  opacity: 0.9; 
+}
+
+
+.status-icon {
+  margin-bottom: 10px;
+}
+
+.animated-icon {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+  }
+
+  40% {
+      transform: translateY(-15px);
+  }
+
+  60% {
+      transform: translateY(-7px);
+  }
+}
+
+@media (max-width: 900px) {
+  
+  .message-text {
+      font-size: 14px; 
+  }
+
+  .result-text {
+      font-size: 14px; 
+  }
+}
+
