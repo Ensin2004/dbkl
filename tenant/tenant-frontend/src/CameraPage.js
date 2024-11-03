@@ -106,7 +106,7 @@ const CameraPage = ({ onConfirm, icNumber }) => {
           if (capturedDescriptor && tenantDescriptor) {
             // Calculate the match percentage between the two faces
             const matchPercentage = faceapi.euclideanDistance(capturedDescriptor.descriptor, tenantDescriptor.descriptor);
-            isFaceMatch = matchPercentage < 0.7; // Set threshold for face match
+            isFaceMatch = matchPercentage > 0.7; // Set threshold for face match
             console.log("Match Percentage:", matchPercentage);
           }
           console.log("Face Match:", isFaceMatch ? "Match" : "No Match");
