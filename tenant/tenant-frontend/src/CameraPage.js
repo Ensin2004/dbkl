@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import Webcam from "react-webcam";
 import * as faceapi from "./face-api.min";
+import StepIndicator from "./StepIndicator";
 import "./CameraPage.css";
 
 // CameraPage component that handles photo capture and location verification
@@ -163,53 +164,34 @@ const CameraPage = ({ onConfirm, icNumber }) => {
         </div>
       )}
       <div className="camera-container">
-        <h2>Step 2: Take Photo & Verify Location</h2>
+        <StepIndicator currentStep={2} />
         <p className="message-text">
           Please stay in the shop and take a clear photo of your face.
         </p>
-        <>
-          <div className="webcam-container"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "white",
-              zIndex: 1,
-              opacity: 1
-            }}
-          ></div>
+        <div className="webcam-container">
           <Webcam
             audio={false}
             ref={webcamRef}
             screenshotFormat="image/jpeg"
-            style={{
-              width: "80%",
-              height: "80%",
-              objectFit: "cover",
-              zIndex: 2,
-              opacity: 1,
-              backgroundColor: "white"
-            }}
+            screenshotQuality={1}  // Increase quality (1 is the highest)
           />
-          <canvas className="canvas-container"
+          <canvas
+            className="canvas-container"
             ref={canvasRef}
             style={{
-              top: 100,
-              left: 80,
-              width: "80%",
-              height: "80%",
               position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
               zIndex: 3,
               opacity: 1,
             }}
           />
-          <button
-            onClick={handleConfirm}
-            style={{ padding: "10px 20px", fontSize: "18px", zIndex: 3, position: "relative",}}
-          >
-            Take Photo & Check Location
-          </button>
-        </>
+        </div>
+        <button onClick={handleConfirm}>
+          Take Photo & Check Location
+        </button>
       </div>
     </div>
   );

@@ -1,0 +1,93 @@
+/* .step-indicator {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.step {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-bottom: 2px solid #ccc;
+  color: #666;
+  margin: 0 10px;
+  transition: all 0.3s ease;
+}
+
+.step.active {
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+  font-weight: bold;
+} */
+
+
+
+.step-indicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 20px 40px;
+  margin: 0;
+  margin-bottom: 40px;
+  border-radius: 10px 10px 0px 0px; 
+  position: relative;
+  background-color: rgb(229, 229, 229);
+  box-sizing: border-box;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  width: auto;
+}
+
+.step .step-icon {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  background: #8d8d8d;
+  font-size: 20px;
+  text-align: center;
+  color: #ffffff;
+  position: relative;
+  line-height: 50px;
+}
+
+.step.active .step-icon {
+  background: rgb(28, 6, 154);
+}
+
+.step p {
+  text-align: center;
+  color: #8d8d8d;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.step.active p {
+  color: rgb(28, 6, 154);
+}
+
+.indicator-line {
+  height: 2px;
+  background: #8d8d8d;
+  position: absolute;
+  top: 45px;
+  width: calc(100% - 200px);
+  margin-left: 50px;
+}
+
+.indicator-line.active {
+  background: rgb(28, 6, 154);
+}
+
+@media screen and (max-width: 500px) {
+  .step p {
+    font-size: 11px;
+    bottom: -20px;
+  }
+}
