@@ -13,6 +13,7 @@ const CameraPage = ({ onConfirm, icNumber }) => {
   const webcamRef = useRef(null); // Reference to the Webcam component
   const canvasRef = useRef(null); // Reference to the canvas for drawing
   const [tenantImage, setTenantImage] = useState(null); // Store tenant image fetched from backend
+  const [loading, setLoading] = useState(false); // Loading state
 
   // load face recognition models on component mount
   useEffect(() => {
@@ -46,8 +47,11 @@ const CameraPage = ({ onConfirm, icNumber }) => {
 
   // Function to handle confirmation of photo and location
   const handleConfirm = async () => {
+    setLoading(true); // Start loading
+
     if (!icNumber) {
       alert("IC number is missing.");
+      setLoading(false); // Stop loading if IC number is missing
       return;
     }
 
@@ -122,10 +126,8 @@ const CameraPage = ({ onConfirm, icNumber }) => {
           console.log("Final Face Match:", isFaceMatch); // Log face match
           console.log("Final Status:", status); // Log the final status
 
-          // TODO: implement next by bryan
           await axios.put(`http://localhost:5000/tenant/update-status/${icNumber}`, { status });
 
-          // TODO: implement next by bryan
           // Construct the URL dynamically using the IC number
           const url = `http://localhost:5000/tenant/update-status/${icNumber}`;
 
@@ -134,21 +136,32 @@ const CameraPage = ({ onConfirm, icNumber }) => {
           console.log("Request Body:", { status });
 
           onConfirm(isLocationMatch, isFaceMatch); // Proceed if location and face recognition are checked
+
+          setLoading(false); // Stop loading after processing is complete
+
         },
         (error) => {
           console.error("Geolocation error:", error);
           alert("Failed to get your location. Please enable location access.");
+          setLoading(false); // Stop loading if location fetch fails
         },
         { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 } // Geolocation options
       );
     } catch (error) {
       console.error("Error:", error);
       alert("An error occurred. Please try again.");
+      setLoading(false); // Stop loading if location fetch fails
     }
   };
 
   return (
     <div className="full-screen">
+      {loading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <p>Loading, please wait...</p>
+        </div>
+      )}
       <div className="camera-container">
         <h2>Step 2: Take Photo & Verify Location</h2>
         <p className="message-text">
@@ -160,6 +173,9 @@ const CameraPage = ({ onConfirm, icNumber }) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              backgroundColor: "white",
+              zIndex: 1,
+              opacity: 1
             }}
           ></div>
           <Webcam
@@ -170,7 +186,9 @@ const CameraPage = ({ onConfirm, icNumber }) => {
               width: "80%",
               height: "80%",
               objectFit: "cover",
-              zIndex: 1,
+              zIndex: 2,
+              opacity: 1,
+              backgroundColor: "white"
             }}
           />
           <canvas className="canvas-container"
@@ -181,7 +199,8 @@ const CameraPage = ({ onConfirm, icNumber }) => {
               width: "80%",
               height: "80%",
               position: "absolute",
-              zIndex: 2,
+              zIndex: 3,
+              opacity: 1,
             }}
           />
           <button
