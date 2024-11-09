@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import StepIndicator from "./StepIndicator";
 import "./ICEntryPage.css";
 
 /**
@@ -65,7 +66,7 @@ const ICEntryPage = ({ onNext }) => {
   return (
     <div className="full-screen">
       <div className="container">
-        <h2>Step 1: Enter IC Number</h2>
+        <StepIndicator currentStep={1} />
         <input
           type="text"
           placeholder="Enter your IC number"
