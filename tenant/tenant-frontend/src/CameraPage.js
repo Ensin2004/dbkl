@@ -114,9 +114,9 @@ const CameraPage = ({ onConfirm, icNumber }) => {
           let isFaceMatch = false;
           if (capturedDescriptor && tenantDescriptor) {
             // Calculate the match percentage between the two faces
-            const matchPercentage = faceapi.euclideanDistance(capturedDescriptor.descriptor, tenantDescriptor.descriptor);
-            isFaceMatch = matchPercentage < 0.5; // Set threshold for face match, the lower the better, means both face difference very small
-            console.log("Match Percentage:", matchPercentage);
+            const matchDifference = faceapi.euclideanDistance(capturedDescriptor.descriptor, tenantDescriptor.descriptor);
+            isFaceMatch = matchDifference < 0.5; // Set threshold for face match, the lower the better, means both face difference very small
+            console.log("Match Difference:", matchDifference);
           }
           else{
             console.log("No face detected for either the captured photo or tenant image.");
