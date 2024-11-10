@@ -3,6 +3,7 @@ import axios from "axios";
 import Webcam from "react-webcam";
 import * as faceapi from "./face-api.min";
 import StepIndicator from "./StepIndicator";
+import { FaExclamationCircle } from "react-icons/fa";
 import "./CameraPage.css";
 
 // CameraPage component that handles photo capture and location verification
@@ -11,10 +12,12 @@ const CameraPage = ({ onConfirm, icNumber }) => {
   const [locationMatch, setLocationMatch] = useState(null); // Track location matching status
   const [currentLocation, setCurrentLocation] = useState({latitude: null, longitude: null}); // Store current location
   const [capturedPhoto, setCapturedPhoto] = useState(null); // Store the captured photo
+  const [faceDetected, setFaceDetected] = useState(true); // Track if a face is detected
   const webcamRef = useRef(null); // Reference to the Webcam component
   const canvasRef = useRef(null); // Reference to the canvas for drawing
   const [tenantImage, setTenantImage] = useState(null); // Store tenant image fetched from backend
   const [loading, setLoading] = useState(false); // Loading state
+  const [showError, setShowError] = useState(false);  // Error pop-out state
 
   // load face recognition models on component mount
   useEffect(() => {
@@ -48,6 +51,7 @@ const CameraPage = ({ onConfirm, icNumber }) => {
 
   // Function to handle confirmation of photo and location
   const handleConfirm = async () => {
+
     setLoading(true); // Start loading
 
     if (!icNumber) {
@@ -111,8 +115,14 @@ const CameraPage = ({ onConfirm, icNumber }) => {
           if (capturedDescriptor && tenantDescriptor) {
             // Calculate the match percentage between the two faces
             const matchPercentage = faceapi.euclideanDistance(capturedDescriptor.descriptor, tenantDescriptor.descriptor);
-            isFaceMatch = matchPercentage > 0.7; // Set threshold for face match
+            isFaceMatch = matchPercentage < 0.5; // Set threshold for face match, the lower the better, means both face difference very small
             console.log("Match Percentage:", matchPercentage);
+          }
+          else{
+            console.log("No face detected for either the captured photo or tenant image.");
+            setFaceDetected(false);
+            setShowError(true); // Show error box if no face is detected
+
           }
           console.log("Face Match:", isFaceMatch ? "Match" : "No Match");
             
@@ -127,16 +137,11 @@ const CameraPage = ({ onConfirm, icNumber }) => {
           console.log("Final Face Match:", isFaceMatch); // Log face match
           console.log("Final Status:", status); // Log the final status
 
-          await axios.put(`http://localhost:5000/tenant/update-status/${icNumber}`, { status });
-
-          // Construct the URL dynamically using the IC number
-          const url = `http://localhost:5000/tenant/update-status/${icNumber}`;
-
-          // Log the constructed URL to the console for verification
-          console.log("Request URL:", url);
-          console.log("Request Body:", { status });
-
-          onConfirm(isLocationMatch, isFaceMatch); // Proceed if location and face recognition are checked
+          if (isFaceMatch) {
+            await axios.put(`http://localhost:5000/tenant/update-status/${icNumber}`, { status });
+            onConfirm(isLocationMatch, isFaceMatch, latitude, longitude); // Proceed only if face is detected and matches
+            console.log("Request Body:", { status });
+          }
 
           setLoading(false); // Stop loading after processing is complete
 
@@ -153,6 +158,16 @@ const CameraPage = ({ onConfirm, icNumber }) => {
       alert("An error occurred. Please try again.");
       setLoading(false); // Stop loading if location fetch fails
     }
+  };
+
+  // Handle showing error message pop-out box
+  const showErrorBox = () => {
+    setShowError(true);
+  };
+
+  // Close error message box
+  const closeErrorBox = () => {
+    setShowError(false);
   };
 
   return (
@@ -192,6 +207,18 @@ const CameraPage = ({ onConfirm, icNumber }) => {
         <button onClick={handleConfirm}>
           Take Photo & Check Location
         </button>
+
+        {/* Conditionally render message if no face is detected */}
+        {!faceDetected && showError && (
+          <div className="error-modal">
+          <div className="error-content">
+            <FaExclamationCircle className="error-icon" />
+            <h3>No face detected!</h3>
+            <p className="error-message">Make sure your face is clearly visible. Please click the button again to retry.</p>
+            <button className="close-btn" onClick={closeErrorBox}>OK</button>
+          </div>
+        </div>
+        )}
       </div>
     </div>
   );
