@@ -140,7 +140,7 @@ const CameraPage = ({ onConfirm, icNumber }) => {
           // Navigate to the results page if a face is detected, regardless of match status
           if (capturedDescriptor) {
             await axios.put(`http://localhost:5000/tenant/update-status/${icNumber}`, { status });
-            onConfirm(isLocationMatch, isFaceMatch, latitude, longitude); // Proceed only if face is detected and matches
+            onConfirm(isLocationMatch, isFaceMatch, latitude, longitude); 
             console.log("Request Body:", { status });
           }
 

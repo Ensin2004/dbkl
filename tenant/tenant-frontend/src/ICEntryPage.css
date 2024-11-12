@@ -43,6 +43,52 @@ button {
   margin-bottom: 20px;
 }
 
+.success-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Dark semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.success-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.success-icon {
+  color: green;
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.success-message {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.close-btn-success {
+  background-color: #057720;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-btn-success:hover {
+  background-color: #057720;
+}
+
 @media (max-width: 900px) {
     
   .container {
