@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import StepIndicator from "./StepIndicator";
+import { FaCheckCircle} from "react-icons/fa";
 import "./ICEntryPage.css";
 
 /**
@@ -12,55 +13,75 @@ import "./ICEntryPage.css";
  */
 const ICEntryPage = ({ onNext }) => {
   const [icNumber, setICNumber] = useState("");
+  const [showSuccessBox, setShowSuccessBox] = useState(false); // New state for success box
+
+  // Regular expression for IC format 
+  function isNumeric(str) {
+    return /^\d{12}$/.test(str);
+  } 
 
   /**
    * handleNext - Handles the 'Next' button click event
    * Checks if the IC number is valid and exists in the database.
    */
   const handleNext = async () => {
-    if (icNumber.trim()) { // Ensure IC number is not empty or whitespace
-      try {
 
-        // Make a GET request to check if the IC number exists in the database
-        const response = await axios.get(
-          `http://localhost:5000/tenant/IC/${icNumber}`,
-          {
-            withCredentials: true,
-          }
-        );
+    const trimmedICNumber = icNumber.trim();
 
-        console.log("Response:", response.data);
-        
-        if (response.data.exists) {
-          onNext(icNumber); // pass IC to next page
-        } else {
-          alert("IC number does not exist. Please check and try again.");
-        }
-
-      } catch (error) {
-
-        // Handle different types of errors and provide feedback
-        console.error("Error checking IC:", error);
-
-        if (error.response) {
-          console.error("Response data:", error.response.data);
-          console.error("Response status:", error.response.status);
-          console.error("Response headers:", error.response.headers);
-
-        } else if (error.request) {
-          console.error("Request data:", error.request);
-
-        } else {
-          console.error("Error message:", error.message);
-
-        }
-        alert("Error checking IC number. Please try again later.");
-      }
-      
-    } else {
-      // Alert if input is empty
-      alert("Please enter a valid IC number");
+    // if tenant didnt type anything
+    if (trimmedICNumber === "") {
+      alert("Please do not leave blank. Enter your IC.");
+      return;
     }
+
+    // if format not 12 digit number
+    if (!isNumeric(trimmedICNumber)){
+      alert("Invalid format. Please enter a valid 12-digit IC number without dashes.");
+      return;
+    }
+
+    try {
+
+      // Make a GET request to check if the IC number exists in the database
+      const response = await axios.get(
+        `http://localhost:5000/tenant/IC/${trimmedICNumber}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("Response:", response.data);
+      
+      // Check if status is "completed"
+      if (response.data.status === "success") {
+        setShowSuccessBox(true); // Show success box
+      }
+      else {
+        // If status is not "success," proceed to the next step
+        onNext(trimmedICNumber);
+      }
+
+    } catch (error) {
+
+      // Handle server error response
+      if (error.response) {
+        if (error.response.status === 404) {
+          alert("IC number does not exist. Please check and try again.");
+        } else if (error.response.data && error.response.data.error) {
+          alert(error.response.data.error); // Show server error message
+        } else {
+          alert("An unexpected error occurred. Please try again later.");
+        }
+      } else {
+        console.error("Error checking IC:", error);
+        alert("Network error. Please check your connection and try again.");
+      }
+    }
+  };
+
+  // Function to close the success box
+  const closeSuccessBox = () => {
+    setShowSuccessBox(false);
   };
 
   return (
@@ -71,11 +92,23 @@ const ICEntryPage = ({ onNext }) => {
           type="text"
           placeholder="Enter your IC number"
           value={icNumber}
-          onChange={(e) => setICNumber(e.target.value)}
+          onChange={(e) => setICNumber(e.target.value.trim())} // Trim whitespace here
           style={{ padding: "10px", fontSize: "16px", width: "80%" }}
         />
         <br />
         <button onClick={handleNext}>Next</button>
+
+        {/* Success message div box */}
+        {showSuccessBox && (
+          <div className="success-modal">
+            <div className="success-content">
+              <FaCheckCircle className="success-icon" />
+              <h3>Already Verified!</h3>
+              <p>You have already completed the verification process. Do not need to verify again.</p>
+              <button className="close-btn-success" onClick={closeSuccessBox}>OK</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
