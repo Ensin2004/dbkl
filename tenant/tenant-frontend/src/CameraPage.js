@@ -137,7 +137,8 @@ const CameraPage = ({ onConfirm, icNumber }) => {
           console.log("Final Face Match:", isFaceMatch); // Log face match
           console.log("Final Status:", status); // Log the final status
 
-          if (isFaceMatch) {
+          // Navigate to the results page if a face is detected, regardless of match status
+          if (capturedDescriptor) {
             await axios.put(`http://localhost:5000/tenant/update-status/${icNumber}`, { status });
             onConfirm(isLocationMatch, isFaceMatch, latitude, longitude); // Proceed only if face is detected and matches
             console.log("Request Body:", { status });
@@ -210,7 +211,7 @@ const CameraPage = ({ onConfirm, icNumber }) => {
 
         {/* Conditionally render message if no face is detected */}
         {!faceDetected && showError && (
-          <div className="error-modal">
+        <div className="error-modal">
           <div className="error-content">
             <FaExclamationCircle className="error-icon" />
             <h3>No face detected!</h3>
