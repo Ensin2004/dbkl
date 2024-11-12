@@ -31,6 +31,11 @@ function App() {
     setStep(4); // Go to results page
   };
 
+  // Function to handle "Try Again" button
+  const handleTryAgain = () => {
+    setStep(3); // Go back to Camera Page to try again
+  };
+
   return (
     <div className="App">
       <Header />
@@ -51,7 +56,8 @@ function App() {
           isLocationMatch={isLocationMatch} // Pass location match result
           isFaceMatch={isFaceMatch}         // Pass face match result 
           latitude={latitude} 
-          longitude={longitude} 
+          longitude={longitude}
+          onTryAgain={handleTryAgain} 
         />
       )}
 

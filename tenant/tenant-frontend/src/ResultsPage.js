@@ -1,7 +1,8 @@
 import React,  { useEffect } from 'react';
 import "./ResultsPage.css";
 
-const ResultsPage = ({ icNumber, isLocationMatch, isFaceMatch }) => {
+const ResultsPage = ({ icNumber, isLocationMatch, isFaceMatch, onTryAgain }) => {
+
   // Determine if both matches are true
   const isSuccess = isLocationMatch && isFaceMatch;
   const isIncomplete = (isLocationMatch || isFaceMatch) && !isSuccess;
@@ -99,6 +100,12 @@ const ResultsPage = ({ icNumber, isLocationMatch, isFaceMatch }) => {
             {isFaceMatch ? " Match" : " No Match"}
           </span>
         </p>
+
+        {/* Show "Try Again" button if status is not success */}
+        {!isSuccess && (
+          <button onClick={onTryAgain} className="try-again-button">Try Again</button>
+        )}
+        
       </div>
     </div>
   );
